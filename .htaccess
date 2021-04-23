@@ -1,0 +1,33 @@
+#Turn Rewrite Engine On
+RewriteEngine On
+
+#Remove .php extension form users.php
+#RewriteRule ^users/?$ users.php [NC,L]
+
+#Rewrite URL
+#RewriteRule ^users/([0-9]+)/?$ users.php?id=$1 [NC,L]
+
+
+#RewriteEngine On
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+
+
+# Redirect /file.php to /file with POST (enabled)
+
+  RewriteCond %{REQUEST_METHOD} !POST     
+  RewriteCond %{THE_REQUEST} \s/([^.]+)\.php [NC]
+  RewriteRule ^ /%1 [NE,L,R]
+
+# Add trailing slash to url
+
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_URI} !(\.[a-zA-Z0-9]{1,5}|/|#(.*))$
+  RewriteRule ^(.*)$ $1/ [L]
+
+# Remove .php-extension from url
+
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}\.php -f
+  RewriteRule ^([^\.]+)/$ $1.php 
