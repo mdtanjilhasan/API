@@ -107,13 +107,4 @@ class LoginRepository extends Database implements LoginInterface
 
         return $response;
     }
-
-    public function checkValidToken($token)
-    {
-        try {
-            $decoded = JWT::decode($token, $this->secretKey, array('HS256'));
-        } catch (Exception $exception) {
-            die($exception->getMessage());
-        }
-    }
 }
