@@ -2,6 +2,7 @@
     "require": {
         "firebase/php-jwt": "^5.2",
         "ext-json": "*",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "rakit/validation": "^1.4"
     }
 }

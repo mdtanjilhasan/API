@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__.'/../../sanitizer/ProductSanitizer.php';
-require_once __DIR__.'/../Repositories/CRUD/CRUDRepository.php';
+require_once __DIR__ . '/../../sanitizer/ProductSanitizer.php';
+require_once __DIR__ . '/../Repositories/CRUD/CRUDRepository.php';
 
 class ProductsController extends ProductSanitizer
 {
@@ -25,6 +25,13 @@ class ProductsController extends ProductSanitizer
 
     public function store(array $request)
     {
+        $messages = $this->formValidation($request);
+
+        if (!empty($messages)) {
+            http_response_code(422);
+            die(json_encode(['success' => false, 'messages' => $messages]));
+        }
+
         $request = $this->validation($request);
         $request['sku'] = uniqid();
         $response = $this->instance->create($request);
@@ -45,6 +52,24 @@ class ProductsController extends ProductSanitizer
         }
         http_response_code(200);
         echo json_encode($product);
+    }
+
+    public function edit($id, array $request)
+    {
+        $messages = $this->formValidation($request);
+
+        if (!empty($messages)) {
+            http_response_code(422);
+            die(json_encode(['success' => false, 'messages' => $messages]));
+        }
+        $request = $this->validation($request);
+        $response = $this->instance->update($id, $request);
+        if (!$response['success']) {
+            http_response_code($response['status']);
+            die(json_encode($response));
+        }
+        http_response_code(200);
+        echo json_encode($response);
     }
 
     public function destroy($id)

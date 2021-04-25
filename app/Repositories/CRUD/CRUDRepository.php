@@ -54,8 +54,24 @@ class CRUDRepository extends Database implements CRUDInterface
     // update record in the database
     public function update($id, array $data)
     {
-        $record = $this->find($id);
-        return $record->update($data);
+        $this->connection->beginTransaction();
+        try {
+            $data = array_merge(['id' => $id], $data, ['updated_at' => date('Y-m-d h:i:s')]);
+            $keys = array_map(function ($value) {
+                if ($value != 'id') {
+                    return $value . ' = :' . $value;
+                }
+            }, array_keys($data));
+            $values = implode(',', array_filter($keys));
+            $sql = "UPDATE $this->table SET $values WHERE id = :id";
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($data);
+            $this->connection->commit();
+            return ['success' => true, 'message' => 'Data Updated Successfully', 'status' => 200];
+        } catch (PDOException $exception) {
+            $this->connection->rollBack();
+            return ['success' => false, 'message' => $exception->getMessage(), 'status' => 400];
+        }
     }
 
     // remove record from the database
@@ -86,12 +102,12 @@ class CRUDRepository extends Database implements CRUDInterface
         }
     }
 
-    public function tokenIsValid()
+    public function tokenIsValid($flag = true)
     {
-        return $this->checkValidToken();
+        return $this->checkValidToken($flag);
     }
 
-    private function checkValidToken()
+    private function checkValidToken($withPermission)
     {
         try {
             if (!array_key_exists('HTTP_AUTHORIZATION', $_SERVER)) {
@@ -99,6 +115,11 @@ class CRUDRepository extends Database implements CRUDInterface
             }
             $token = explode(' ', $_SERVER['HTTP_AUTHORIZATION'])[1];
             $decoded = JWT::decode($token, $this->secretKey, array('HS256'));
+
+            if (!$withPermission) {
+                return ['success' => true, 'message' => 'success', 'status' => 200];
+            }
+
             $json = json_encode($decoded);
             $array = json_decode($json, true);
             if ($this->userHasPermission($array['data']['id'])) {

@@ -15,6 +15,13 @@ class LoginController extends LoginSanitizer
 
     public function userLogin($credentials)
     {
+        $messages = $this->formValidation($credentials);
+
+        if (!empty($messages)) {
+            http_response_code(422);
+            die(json_encode(['success' => false, 'messages' => $messages]));
+        }
+
         $credentials = $this->sanitizeCredentials($credentials);
         if (is_null($credentials)) {
             http_response_code(400);

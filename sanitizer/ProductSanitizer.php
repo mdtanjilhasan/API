@@ -1,6 +1,9 @@
 <?php
 
 require_once __DIR__ . '/../database/Sanitizer.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Rakit\Validation\Validator;
 
 abstract class ProductSanitizer extends Sanitizer
 {
@@ -20,7 +23,7 @@ abstract class ProductSanitizer extends Sanitizer
         return $fields;
     }
 
-    public function validation(array $request)
+    protected function validation(array $request)
     {
         $data = [];
         foreach ($this->fillable as $name) {
@@ -29,5 +32,24 @@ abstract class ProductSanitizer extends Sanitizer
             }
         }
         return $data;
+    }
+
+    protected function formValidation($request)
+    {
+        $validator = new Validator;
+        $validation = $validator->validate($request, [
+            'name' => 'required',
+            'description' => 'nullable',
+            'price' => 'required|numeric',
+            'category_id' => 'required|integer',
+//            'avatar' => 'required|uploaded_file:0,500K,png,jpeg',
+        ]);
+
+        if ($validation->fails()) {
+            // handling errors
+            $errors = $validation->errors();
+            return $errors->firstOfAll();
+        }
+        return null;
     }
 }
