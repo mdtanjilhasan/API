@@ -11,9 +11,13 @@ $api = $_SERVER['REQUEST_METHOD'];
 
 if ($api == 'POST')
 {
-    $formData = json_decode(file_get_contents("php://input"),true);
+	if (!array_key_exists('HTTP_AUTHORIZATION', $_SERVER)) {
+            die('no header found');
+        }
+	die(json_encode($_SERVER));
+    // $formData = json_decode(file_get_contents("php://input"),true);
     $instance = new LoginController();
-    $instance->userLogin($formData);
+    $instance->userLogout();
     exit();
 }
 

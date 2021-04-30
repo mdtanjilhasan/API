@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../../sanitizer/ProductSanitizer.php';
 require_once __DIR__ . '/../Repositories/CRUD/CRUDRepository.php';
+require_once __DIR__ . '/../Classes/ProductHelper.php';
 
 class ProductsController extends ProductSanitizer
 {
@@ -32,13 +33,21 @@ class ProductsController extends ProductSanitizer
             die(json_encode(['success' => false, 'messages' => $messages]));
         }
 
+        $image = array_key_exists('image', $request) && !empty($request['image']) ? $request['image'] : null;
         $request = $this->validation($request);
         $request['sku'] = uniqid();
         $response = $this->instance->create($request);
+
         if (!$response['success']) {
             http_response_code($response['status']);
             die(json_encode($response));
         }
+
+        if (!empty($image)) {
+            $helper = new ProductHelper();
+            $helper->uploadImage($response['id'], 'product_images', $image);
+        }
+
         http_response_code(200);
         echo json_encode($response);
     }
