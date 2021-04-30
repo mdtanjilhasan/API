@@ -42,7 +42,7 @@ abstract class ProductSanitizer extends Sanitizer
             'description' => 'nullable',
             'price' => 'required|numeric',
             'category_id' => 'required|integer',
-//            'avatar' => 'required|uploaded_file:0,500K,png,jpeg',
+            'image' => 'required|uploaded_file:0,500K,png,jpeg',
         ]);
 
         if ($validation->fails()) {

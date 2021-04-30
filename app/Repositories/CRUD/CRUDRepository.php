@@ -45,7 +45,8 @@ class CRUDRepository extends Database implements CRUDInterface
             $sql = "INSERT INTO $this->table ($keys) VALUES ($values)";
             $stmt = $this->connection->prepare($sql);
             $stmt->execute($data);
-            return ['success' => true, 'message' => 'Data Inserted Successfully', 'status' => 200];
+            $lastId = $this->connection->lastInsertId();
+            return ['success' => true, 'message' => 'Data Inserted Successfully', 'id' => $lastId, 'status' => 200];
         } catch (PDOException $exception) {
             return ['success' => false, 'message' => $exception->getMessage(), 'status' => 400];
         }
@@ -78,7 +79,7 @@ class CRUDRepository extends Database implements CRUDInterface
     public function delete($id)
     {
         try {
-            $sql = "DELETE FROM $this->table where id = :id";
+            $sql = "DELETE FROM $this->table WHERE id = :id";
             $stmt = $this->connection->prepare($sql);
             $stmt->execute(['id' => $id]);
 
@@ -92,7 +93,7 @@ class CRUDRepository extends Database implements CRUDInterface
     public function find($id)
     {
         try {
-            $sql = "select * from $this->table where id = :id";
+            $sql = "SELECT * FROM $this->table WHERE id = :id";
             $stmt = $this->connection->prepare($sql);
             $stmt->execute(['id' => $id]);
             $data = $stmt->fetch();
@@ -134,7 +135,7 @@ class CRUDRepository extends Database implements CRUDInterface
     private function userHasPermission($id)
     {
         try {
-            $sql = "select * from users where id = :id";
+            $sql = "SELECT * FROM users WHERE id = :id";
             $stmt = $this->connection->prepare($sql);
             $stmt->execute(['id' => $id]);
             $count = $stmt->rowCount();

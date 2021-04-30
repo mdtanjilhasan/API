@@ -76,7 +76,6 @@ class LoginRepository extends Database implements LoginInterface
             "iss" => $this->issuerClaim,
             "aud" => $this->audienceClaim,
             "iat" => $this->getIssuedAt(),
-            "nbf" => $this->getNotBeforeAt(),
             "exp" => $this->getExpiredAt(),
             "data" => ["id" => $user['id'], "email" => $user['email']]
         ];
@@ -87,7 +86,17 @@ class LoginRepository extends Database implements LoginInterface
         if (password_verify($password, $user['password'])) {
             $token = $this->getTokenData($user);
             $jwt = JWT::encode($token, $this->secretKey);
-            return ["success" => true, "message" => "Successful login.", "token" => $jwt, "email" => $user['email'], 'is_admin' => $user['is_admin'], "expire_at" => $token['exp']];
+            return [
+                "success" => true,
+                "message" => "Successful login.",
+                "token" => $jwt,
+                "expire_at" => $token['exp'],
+                "user" => [
+                    "name" => $user['name'],
+                    "email" => $user['email'],
+                    'is_admin' => $user['is_admin'] ? true : false
+                ]
+            ];
         }
         return null;
     }
@@ -102,9 +111,17 @@ class LoginRepository extends Database implements LoginInterface
 
         $response = $this->verifyPasswordAndGenerateToken($user, $credentials['password']);
         if (empty($response)) {
-            return ["success" => false, "message" => "Login failed.", 'status' => 401];
+            return ["success" => false, "message" => "credentials Does Not Match.", 'status' => 401];
         }
 
         return $response;
+    }
+
+    public function logout()
+    {
+        if (!array_key_exists('HTTP_AUTHORIZATION', $_SERVER)) {
+            return ['success' => false, 'message' => 'Unauthorized Access', 'status' => 401];
+        }
+        return ['success' => false, 'message' => 'Logout Successful', 'status' => 200];
     }
 }

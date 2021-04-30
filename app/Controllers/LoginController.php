@@ -37,6 +37,18 @@ class LoginController extends LoginSanitizer
         echo json_encode($response);
     }
 
+    public function userLogout()
+    {
+        $response = $this->instance->logout();
+        if (!$response['success']) {
+            http_response_code($response['status']);
+            unset($response['status']);
+            die(json_encode($response));
+        }
+        http_response_code(200);
+        echo json_encode($response);
+    }
+
     public function decode()
     {
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJKV1RfSFRUUF9JU1NVRVIiLCJhdWQiOiJKV1RfSFRUUF9BVURJRU5DRSIsImlhdCI6MTYxOTE5ODc2NiwibmJmIjoxNjE5MTk4Nzc2LCJleHAiOjE2MTkxOTg4MjYsImRhdGEiOnsiaWQiOjEsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIn19.ldw4DRKoVafNNd8wrk7-LQFdYcGS3oA58TBxinR8wqQ';
