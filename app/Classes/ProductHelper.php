@@ -53,18 +53,29 @@ class ProductHelper extends Database
 		return null;
 	}
 
-	private function getSql($id, $path, $table)
+	private function getSql($id, $path, $table, $update)
 	{
 		$data = ['product_id' => $id, 'path' => $path, 'created_at' => date('Y-m-d h:i:s'), 'updated_at' => date('Y-m-d h:i:s')];
         $keys = implode(',', array_keys($data));
         $values = implode(',', array_map(function ($value) {
             return ':' . $value;
         }, array_keys($data)));
-        $sql = "INSERT INTO $table ($keys) VALUES ($values)";
+        if ($update) {
+            unset($data['created_at']);
+            unset($data['product_id']);
+            $keys = array_map(function ($value) {
+                return $value . ' = :' . $value;
+            }, array_keys($data));
+            $values = implode(',', array_filter($keys));
+            $sql = "UPDATE $table SET $values WHERE product_id = :product_id";
+            $data['product_id'] = $id;
+        } else {
+            $sql = "INSERT INTO $table ($keys) VALUES ($values)";
+        }
         return ['sql' => $sql, 'data' => $data];
 	}
 
-	public function uploadImage($id, $table, $image)
+	public function uploadImage($id, $table, $image, $update = false)
     {
         try {
         	$path = $this->getImagePath($image);
@@ -73,11 +84,10 @@ class ProductHelper extends Database
         		return ['success' => false, 'message' => 'Image Upload Failed'];
         	}
 
-        	$sql = $this->getSql($id, $path, $table);
+        	$sql = $this->getSql($id, $path, $table,$update);
             
             $stmt = $this->connection->prepare($sql['sql']);
             $stmt->execute($sql['data']);
-
             return ['success' => true, 'message' => 'Image Upload Successful'];
         } catch (PDOException $exception) {
             return ['success' => false, 'message' => 'Image Upload Failed'];
