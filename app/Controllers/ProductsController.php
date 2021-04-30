@@ -87,7 +87,7 @@ class ProductsController extends ProductSanitizer
 
         if (!empty($image)) {
             $helper = new ProductHelper();
-            $helper->uploadImage($id, 'product_images', $image,true);
+            $helper->uploadImage($id, 'product_images', $image, true);
         }
 
         http_response_code(200);

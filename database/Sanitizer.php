@@ -3,7 +3,8 @@
 
 class Sanitizer
 {
-    public function sanitizeInput($data) {
+    public function sanitizeInput($data)
+    {
         if (empty($data))
             return $data;
 

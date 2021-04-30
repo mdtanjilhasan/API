@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__.'/../Repositories/Login/LoginRepository.php';
-require_once __DIR__.'/../../sanitizer/LoginSanitizer.php';
+require_once __DIR__ . '/../Repositories/Login/LoginRepository.php';
+require_once __DIR__ . '/../../sanitizer/LoginSanitizer.php';
 
 class LoginController extends LoginSanitizer
 {
