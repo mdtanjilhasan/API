@@ -126,9 +126,9 @@ class CRUDRepository extends Database implements CRUDInterface
             if ($this->userHasPermission($array['data']['id'])) {
                 return ['success' => true, 'message' => 'success', 'status' => 200];
             }
-            throw new Exception('Access Denied');
+            return ['success' => false, 'message' => 'Access Denied', 'status' => 403];
         } catch (Exception $exception) {
-            return ['success' => false, 'message' => $exception->getMessage(), 'status' => 403];
+            return ['success' => false, 'message' => $exception->getMessage(), 'status' => 401];
         }
     }
 
