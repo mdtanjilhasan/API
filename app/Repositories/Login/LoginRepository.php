@@ -111,7 +111,7 @@ class LoginRepository extends Database implements LoginInterface
 
         $response = $this->verifyPasswordAndGenerateToken($user, $credentials['password']);
         if (empty($response)) {
-            return ["success" => false, "message" => "credentials Does Not Match.", 'status' => 401];
+            return ["success" => false, "message" => "Credentials Does Not Match.", 'status' => 401];
         }
 
         return $response;

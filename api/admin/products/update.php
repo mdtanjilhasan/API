@@ -22,7 +22,7 @@ if ($api == 'POST')
         die('Invalid Request');
     }
     $instance = new ProductsController();
-    $instance->edit($id, $_REQUEST);
+    $instance->edit($id, $_POST + $_FILES);
     exit();
 }
 
