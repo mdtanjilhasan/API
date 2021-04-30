@@ -14,7 +14,7 @@ if ($api == 'GET')
     if (empty($id)) {
         $instance->getAll();
     } else {
-        $instance->show($id);
+        $instance->show($id,'image');
     }
     exit();
 }

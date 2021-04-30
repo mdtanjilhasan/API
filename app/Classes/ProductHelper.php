@@ -93,4 +93,22 @@ class ProductHelper extends Database
             return ['success' => false, 'message' => 'Image Upload Failed'];
         }
     }
+
+    public function getImage($productId)
+    {
+        try {
+            $sql = "SELECT * FROM product_images WHERE product_id = $productId";            
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute();
+            $count = $stmt->rowCount();
+            if ($count > 0) {
+                $data = $stmt->fetchAll();
+            } else {
+                $data = $stmt->fetch();
+            }
+            return ['success' => true, 'data' => $data];
+        } catch (PDOException $exception) {
+            return ['success' => false, 'message' => null];
+        }
+    }
 }

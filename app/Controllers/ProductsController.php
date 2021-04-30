@@ -52,12 +52,17 @@ class ProductsController extends ProductSanitizer
         echo json_encode($response);
     }
 
-    public function show($id)
+    public function show($id, $flag = null)
     {
         $product = $this->instance->find($id);
         if (!$product['success']) {
             http_response_code($product['status']);
             die(json_encode($product));
+        }
+        if ($flag === 'image') {
+            $helper = new ProductHelper();
+            $data = $helper->getImage($id);
+            $product['images'] = $data;
         }
         http_response_code(200);
         echo json_encode($product);
