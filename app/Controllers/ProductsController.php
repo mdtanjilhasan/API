@@ -71,12 +71,19 @@ class ProductsController extends ProductSanitizer
             http_response_code(422);
             die(json_encode(['success' => false, 'messages' => $messages]));
         }
+        $image = array_key_exists('image', $request) && !empty($request['image']) ? $request['image'] : null;
         $request = $this->validation($request);
         $response = $this->instance->update($id, $request);
         if (!$response['success']) {
             http_response_code($response['status']);
             die(json_encode($response));
         }
+
+        if (!empty($image)) {
+            $helper = new ProductHelper();
+            $helper->uploadImage($response['id'], 'product_images', $image);
+        }
+        
         http_response_code(200);
         echo json_encode($response);
     }
